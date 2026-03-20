@@ -13,6 +13,7 @@ import {
   PenSquare,
   ListChecks,
   ClipboardCheck,
+  Layers,
   LogOut,
   ChevronLeft,
   Menu,
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
   { href: "/admin/tasks", label: "Tasks", icon: ListChecks },
   { href: "/admin/composer", label: "Composer", icon: PenSquare },
   { href: "/admin/submissions", label: "Submissions", icon: ClipboardCheck },
+  { href: "/admin/phases", label: "Phases & Drip", icon: Layers },
 ];
 
 export function AdminSidebar() {
