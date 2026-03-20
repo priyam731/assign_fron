@@ -9,6 +9,7 @@ import { Loader2, Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Info } fro
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/shared/rich-text-editor";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
@@ -197,17 +198,17 @@ export function TaskComposerForm({ task, onSuccess }: TaskComposerFormProps) {
             />
           </div>
 
-          {/* Details */}
+          {/* Details — Lexical rich-text editor */}
           <div className="space-y-1.5">
-            <Label htmlFor="details">
+            <Label>
               Full Details <span className="text-destructive">*</span>
             </Label>
-            <Textarea
-              id="details"
-              rows={5}
-              placeholder="Full instructions for the worker — what to do, where to post, what to include, etc."
-              className="resize-none"
-              {...form.register("details")}
+            <RichTextEditor
+              value={form.getValues("details")}
+              onChange={(text) =>
+                form.setValue("details", text, { shouldValidate: true })
+              }
+              placeholder="Full instructions for the worker — what to do, where to post, what to include… (Markdown shortcuts work: **bold**, ## heading, - bullet)"
             />
             {form.formState.errors.details && (
               <p className="text-xs text-destructive">{form.formState.errors.details.message}</p>

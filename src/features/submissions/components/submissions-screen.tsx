@@ -31,6 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { StatusBadge, TaskTypeBadge } from "@/components/shared/badges";
 import { useSubmissions, useApproveSubmission, useRejectSubmission } from "@/features/submissions/hooks/use-submissions";
+import { useSubmissionsState } from "@/hooks/use-url-state";
 import { Submission, SubmissionStatus, TaskType } from "@/types";
 
 const STATUS_TABS = [
@@ -195,9 +196,7 @@ function SubmissionDetailRow({ sub }: SubmissionRowProps) {
 
 export function SubmissionsScreen() {
   const { data: allSubmissions = [], isLoading } = useSubmissions();
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [search, setSearch] = useState("");
-  const [groupByTask, setGroupByTask] = useState(false);
+  const { search, setSearch, statusFilter, setStatusFilter, groupByTask, setGroupByTask } = useSubmissionsState();
   const [sortField, setSortField] = useState<"createdAt" | "status">("createdAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
@@ -322,7 +321,7 @@ export function SubmissionsScreen() {
 
           {/* Group by task */}
           <button
-            onClick={() => setGroupByTask((v) => !v)}
+            onClick={() => setGroupByTask(!groupByTask)}
             className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-xs font-medium transition-colors ${
               groupByTask
                 ? "border-primary bg-primary/10 text-primary"
