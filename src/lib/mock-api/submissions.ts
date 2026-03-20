@@ -66,6 +66,7 @@ export async function createSubmission(
     emailContent: data.emailContent,
     screenshotUrl,
     phaseId: data.phaseId,
+    reward: task.reward,
     createdAt: now,
     updatedAt: now,
   };

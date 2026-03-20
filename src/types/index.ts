@@ -102,6 +102,7 @@ export interface Submission {
   screenshotUrl?: string; // base64 data URL
   rejectionReason?: string;
   phaseId?: string;
+  reward: number; // reward amount from the task at time of submission
   createdAt: string;
   updatedAt: string;
 }

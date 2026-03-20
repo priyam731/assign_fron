@@ -3,7 +3,7 @@
 // ============================================
 
 import { v4 as uuid } from "uuid";
-import { Task, TaskFormData } from "@/types";
+import { Task, TaskFormData, DripFeedState } from "@/types";
 import { STORAGE_KEYS, FETCH_DELAY, MUTATION_DELAY } from "@/lib/constants";
 import { getItem, setItem } from "@/lib/storage";
 import { delay } from "./delay";
@@ -56,7 +56,7 @@ export async function createTask(data: TaskFormData): Promise<Task> {
           drip_interval: data.dripFeed.drip_interval,
           releasedSlots: data.dripFeed.drip_amount,
           lastDripAt: now,
-          state: "active" as const,
+          state: DripFeedState.ACTIVE,
         }
       : undefined,
   };
@@ -75,9 +75,10 @@ export async function updateTask(id: string, data: Partial<TaskFormData>): Promi
   if (index === -1) throw new Error("Task not found");
 
   const existing = tasks[index];
+  const { phases: _phases, dripFeed: _dripFeed, ...safeData } = data;
   const updated: Task = {
     ...existing,
-    ...data,
+    ...safeData,
     updatedAt: new Date().toISOString(),
   };
 
@@ -100,7 +101,7 @@ export async function updateTask(id: string, data: Partial<TaskFormData>): Promi
         drip_interval: data.dripFeed.drip_interval,
         releasedSlots: existing.dripFeed?.releasedSlots || data.dripFeed.drip_amount,
         lastDripAt: existing.dripFeed?.lastDripAt || new Date().toISOString(),
-        state: existing.dripFeed?.state || "active",
+        state: existing.dripFeed?.state || DripFeedState.ACTIVE,
       };
     } else {
       updated.dripFeed = undefined;

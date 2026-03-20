@@ -186,6 +186,7 @@ function generateSubmissions(tasks: Task[], workers: User[]): Submission[] {
         workerName: worker.name,
         workerAvatar: worker.avatar,
         status,
+        reward: task.reward,
         createdAt: createdDate.toISOString(),
         updatedAt: createdDate.toISOString(),
       };
