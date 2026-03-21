@@ -74,7 +74,7 @@ export function TaskComposerForm({ task, onSuccess }: TaskComposerFormProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(composerSchema) as any,
     defaultValues: {
-      task_type: task?.task_type,
+      task_type: task?.task_type ?? ("" as TaskType),
       title: task?.title ?? "",
       description: task?.description ?? "",
       details: task?.details ?? "",
@@ -152,7 +152,7 @@ export function TaskComposerForm({ task, onSuccess }: TaskComposerFormProps) {
               Task Type <span className="text-destructive">*</span>
             </Label>
             <Select
-              value={form.watch("task_type")}
+              value={form.watch("task_type") || ""}
               onValueChange={(v) => form.setValue("task_type", v as TaskType, { shouldValidate: true })}
             >
               <SelectTrigger id="task_type" className="w-full">
