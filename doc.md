@@ -179,6 +179,23 @@ pending
 Submit your work for this phase.
 https://github.com/you/repo
 https://your-app.vercel.app
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Phase 2 Requirements (Final Phase)
 This final phase introduces more complex features and evaluates the candidate's ability to solve complex UI/UX and thinking problems without many hints.
 

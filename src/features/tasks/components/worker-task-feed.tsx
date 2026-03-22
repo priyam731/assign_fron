@@ -89,10 +89,17 @@ function TaskCard({ task, onClick }: TaskCardProps) {
               Only {availableSlots} left
             </span>
           )}
-          {isWaiting && (
+          {isWaiting && drip && (
             <span className="flex items-center gap-0.5 text-[10px] font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
               <Timer className="h-2.5 w-2.5" />
-              Next batch coming soon
+              {(() => {
+                const nextAt = new Date(drip.lastDripAt).getTime() + drip.drip_interval * 3600 * 1000;
+                const diff = nextAt - Date.now();
+                if (diff <= 0) return "Next batch any moment";
+                const hrs = Math.floor(diff / 3_600_000);
+                const mins = Math.floor((diff % 3_600_000) / 60_000);
+                return `Next batch in ${hrs > 0 ? `${hrs}h ` : ""}${mins}m`;
+              })()}
             </span>
           )}
         </div>

@@ -8,7 +8,7 @@ import {
   approveSubmission,
   rejectSubmission,
 } from "@/lib/mock-api";
-import { SubmissionFormData, User } from "@/types";
+import { SubmissionFormData, User, Submission, SubmissionStatus } from "@/types";
 
 export const SUBMISSION_KEYS = {
   all: ["submissions"] as const,
@@ -49,13 +49,53 @@ export function useCreateSubmission() {
       data: SubmissionFormData;
       user: User;
     }) => createSubmission(data, user),
-    onSuccess: (_, { data }) => {
+
+    // Optimistically add the submission to the worker's local cache
+    // so the dashboard shows "+$X.XX pending review" without waiting for the server.
+    onMutate: async ({ data, user }) => {
+      await qc.cancelQueries({ queryKey: SUBMISSION_KEYS.byWorker(user.id) });
+      const previous = qc.getQueryData(SUBMISSION_KEYS.byWorker(user.id));
+
+      // Build a temporary optimistic submission — will be replaced after invalidation
+      const optimistic: Submission = {
+        id: `temp-${Date.now()}`,
+        taskId: data.taskId,
+        taskTitle: "", // filled in by server; placeholder only
+        taskType: "social_media_posting" as any,
+        workerId: user.id,
+        workerName: user.name,
+        workerAvatar: user.avatar ?? "",
+        status: SubmissionStatus.PENDING,
+        postUrl: data.postUrl,
+        emailContent: data.emailContent,
+        reward: 0, // reward will be correct after invalidation
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      qc.setQueryData(
+        SUBMISSION_KEYS.byWorker(user.id),
+        (old: Submission[] = []) => [optimistic, ...old]
+      );
+
+      return { previous, workerId: user.id };
+    },
+
+    onError: (_err, _vars, context) => {
+      // Roll back on failure
+      if (context?.previous !== undefined) {
+        qc.setQueryData(SUBMISSION_KEYS.byWorker(context.workerId), context.previous);
+      }
+      toast.error("Failed to submit task");
+    },
+
+    onSuccess: (_, { data, user }) => {
       qc.invalidateQueries({ queryKey: SUBMISSION_KEYS.all });
       qc.invalidateQueries({ queryKey: SUBMISSION_KEYS.byTask(data.taskId) });
+      qc.invalidateQueries({ queryKey: SUBMISSION_KEYS.byWorker(user.id) });
       qc.invalidateQueries({ queryKey: ["tasks"] });
       toast.success("Submission sent! We'll review it shortly.");
     },
-    onError: () => toast.error("Failed to submit task"),
   });
 }
 

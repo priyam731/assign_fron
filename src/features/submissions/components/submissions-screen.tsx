@@ -90,6 +90,11 @@ function SubmissionDetailRow({ sub }: SubmissionRowProps) {
         <div className="flex items-center gap-2 flex-wrap">
           <TaskTypeBadge type={sub.taskType} />
           <StatusBadge status={sub.status} />
+          {sub.phaseId && (
+            <span className="flex items-center gap-0.5 text-[10px] font-medium text-purple-600 bg-purple-50 dark:bg-purple-900/20 dark:text-purple-300 px-1.5 py-0.5 rounded-full">
+              Phase
+            </span>
+          )}
         </div>
       </div>
 

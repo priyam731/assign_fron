@@ -28,6 +28,7 @@ import {
   CheckSquare,
   DollarSign,
   Users,
+  Layers,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,7 @@ import { useTasks, useDeleteTask, useBulkUpdateTasks } from "@/features/tasks/ho
 import { Task, TaskType } from "@/types";
 import { TASK_TYPE_LABELS } from "@/lib/constants";
 import { TaskDetailPanel } from "@/features/tasks/components/task-detail-panel";
+import { TaskPhasesPanel } from "@/features/tasks/components/phase2-controls";
 
 // ─── Column Defs ─────────────────────────────────────────────────────────────
 
@@ -133,6 +135,37 @@ function getColumns(
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => <TaskStatusBadge status={row.original.status} />,
+    },
+    {
+      id: "phases",
+      header: "Phases",
+      cell: ({ row }) => {
+        const task = row.original;
+        if (!task.phases?.length) return <span className="text-xs text-muted-foreground/50">—</span>;
+        const activeIdx = task.activePhaseIndex ?? 0;
+        return (
+          <div className="flex items-center gap-1.5">
+            <div className="flex gap-0.5">
+              {task.phases.map((_, i) => (
+                <div
+                  key={i}
+                  className={`w-2 h-2 rounded-full ${
+                    i < activeIdx
+                      ? "bg-green-500"
+                      : i === activeIdx
+                      ? "bg-primary"
+                      : "bg-muted-foreground/30"
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-[10px] text-muted-foreground font-medium">
+              {activeIdx + 1}/{task.phases.length}
+            </span>
+          </div>
+        );
+      },
+      size: 80,
     },
     {
       accessorKey: "createdAt",
